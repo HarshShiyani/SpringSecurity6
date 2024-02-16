@@ -1,34 +1,34 @@
 package com.harsh.securebank.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import java.sql.Date;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
-public class Customer {
+public class Loans {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "customer_id")
-    private int id;
+    private int loanNumber;
 
-    private String name;
+    private int customerId;
 
-    private String email;
+    private Date startDt;
 
-    private String mobileNumber;
+    private String loanType;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String pwd;
+    private int totalLoan;
 
-    private String role;
+    private int amountPaid;
+
+    private int outstandingAmount;
 
     private String createDt;
+
 }

@@ -12,8 +12,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -38,31 +36,20 @@ public class SecureBankUsernamePwdAuthenticationProvider implements Authenticati
         String rawPassword = authentication.getCredentials().toString();
 
         Customer customer = customerRepository.findByEmail(username);
-        if(customer == null)
+        if (customer == null) {
             throw new BadCredentialsException(username + " is not registered in the system");
+        }
 
         boolean matchPassword = passwordEncoder.matches(rawPassword, customer.getPwd());
-        if(!matchPassword)
+        if (!matchPassword) {
             throw new BadCredentialsException("Invalid password");
+        }
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
         grantedAuthorities.add(new SimpleGrantedAuthority(customer.getRole()));
 
         return new UsernamePasswordAuthenticationToken(username, rawPassword, grantedAuthorities);
     }
-
-
-/*
-    // Custom authentication provider with Customer UserDetailsService
-    @Override
-    public Authentication authenticate(Authentication authentication)
-        throws AuthenticationException {
-
-        UserDetails user = userDetailsService.loadUserByUsername(authentication.getPrincipal().toString());
-
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword(), user.getAuthorities());
-    }
-*/
 
     @Override
     public boolean supports(Class<?> authentication) {
