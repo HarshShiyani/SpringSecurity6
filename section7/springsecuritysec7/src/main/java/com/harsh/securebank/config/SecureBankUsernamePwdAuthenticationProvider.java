@@ -46,7 +46,7 @@ public class SecureBankUsernamePwdAuthenticationProvider implements Authenticati
         }
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        grantedAuthorities.add(new SimpleGrantedAuthority(customer.getRole()));
+        customer.getAuthorities().forEach(authority -> grantedAuthorities.add(new SimpleGrantedAuthority(authority.getName())));
 
         return new UsernamePasswordAuthenticationToken(username, rawPassword, grantedAuthorities);
     }

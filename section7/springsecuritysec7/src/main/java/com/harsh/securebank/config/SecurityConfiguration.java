@@ -43,8 +43,15 @@ public class SecurityConfiguration {
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
             .cors(corsConfig -> corsConfig.configurationSource(configurationSource))
             .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/myAccount", "/myBalance", "/myCards", "/myLoans")
-                .authenticated()
+//                .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
+//                .requestMatchers("/myBalance").hasAnyAuthority("VIEWACCOUNT", "VIEWBALANCE")
+//                .requestMatchers("/myCards").hasAuthority("VIEWCARDS")
+//                .requestMatchers("/myLoans").hasAuthority("VIEWLOANS")
+                .requestMatchers("/myAccount").hasRole("USER")
+                .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/myCards").hasRole("USER")
+                .requestMatchers("/myLoans").hasRole("USER")
+                .requestMatchers("/user").authenticated()
                 .requestMatchers("/contact", "/notices", "/register").permitAll());
 
         http.formLogin(withDefaults());
