@@ -2,7 +2,10 @@ package com.harsh.securebank.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import com.harsh.securebank.filter.AuthenticationLoggingAtFilter;
+import com.harsh.securebank.filter.AuthoritiesLoggingAfterFilter;
 import com.harsh.securebank.filter.CsrfCookieFilter;
+import com.harsh.securebank.filter.RequestValidationBeforeFilter;
 import java.util.Collections;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +44,9 @@ public class SecurityConfiguration {
                 .ignoringRequestMatchers("/contact", "/register")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+            .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+            .addFilterAt(new AuthenticationLoggingAtFilter(), BasicAuthenticationFilter.class)
+            .addFilterAfter(new AuthoritiesLoggingAfterFilter(), BasicAuthenticationFilter.class)
             .cors(corsConfig -> corsConfig.configurationSource(configurationSource))
             .authorizeHttpRequests(requests -> requests
 //                .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
