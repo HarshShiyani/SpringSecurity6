@@ -1,15 +1,18 @@
 package com.harsh.securebank.controller;
 
+import com.harsh.securebank.dto.CustomerDTO;
+import com.harsh.securebank.entity.Authority;
 import com.harsh.securebank.entity.Customer;
 import com.harsh.securebank.repository.CustomerRepository;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,13 +48,22 @@ public class LoginController {
         return response;
     }
 
-    @RequestMapping("/user")
-    public Customer getUserDetailsAfterLogin(Authentication authentication) {
+    @GetMapping("/user")
+    public CustomerDTO getUserDetailsAfterLogin(Authentication authentication) {
 
         if (!authentication.isAuthenticated()) {
             return null;
         }
 
-        return customerRepository.findByEmail(authentication.getName());
+        Customer customerEntity = customerRepository.findByEmail(authentication.getName());
+
+        return CustomerDTO.builder()
+            .name(customerEntity.getName())
+            .email(customerEntity.getEmail())
+            .mobileNumber(customerEntity.getMobileNumber())
+            .authorities(customerEntity.getAuthorities().stream().map(Authority::getName).collect(
+                Collectors.toList()))
+            .role(customerEntity.getRole())
+            .build();
     }
 }
