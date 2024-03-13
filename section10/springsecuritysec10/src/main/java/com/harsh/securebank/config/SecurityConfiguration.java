@@ -60,7 +60,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/myAccount").hasRole("USER")
                 .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/myCards").hasRole("USER")
-                .requestMatchers("/myLoans").hasRole("USER")
+                .requestMatchers("/myLoans").authenticated()
                 .requestMatchers("/user").authenticated()
                 .requestMatchers("/contact", "/notices", "/register").permitAll());
 
