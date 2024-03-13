@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                 sessionManagementConfigurer.sessionCreationPolicy(
                     SessionCreationPolicy.STATELESS))
             .csrf(csrfConfigurer -> csrfConfigurer.csrfTokenRequestHandler(csrfAttributeHandler)
-                .ignoringRequestMatchers("/contact", "/register")
+                .ignoringRequestMatchers("/contact", "/register", "/test/**")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
             .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
@@ -62,7 +62,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/myCards").hasRole("USER")
                 .requestMatchers("/myLoans").authenticated()
                 .requestMatchers("/user").authenticated()
-                .requestMatchers("/contact", "/notices", "/register").permitAll());
+                .requestMatchers("/contact", "/notices", "/register", "/test/**").permitAll());
 
         http.formLogin(withDefaults());
         http.httpBasic(withDefaults());
