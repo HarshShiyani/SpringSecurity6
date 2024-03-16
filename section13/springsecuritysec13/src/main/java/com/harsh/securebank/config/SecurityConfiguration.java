@@ -2,13 +2,7 @@ package com.harsh.securebank.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import com.harsh.securebank.filter.AuthenticationLoggingAtFilter;
-import com.harsh.securebank.filter.AuthoritiesLoggingAfterFilter;
 import com.harsh.securebank.filter.CsrfCookieFilter;
-import com.harsh.securebank.filter.JWTTokenGeneratorFilter;
-import com.harsh.securebank.filter.JWTTokenValidatorFilter;
-import com.harsh.securebank.filter.RequestValidationBeforeFilter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
@@ -17,8 +11,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -53,8 +45,6 @@ public class SecurityConfiguration {
                 .ignoringRequestMatchers("/contact", "/register", "/test/**")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
             .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-            .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
-            .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
             .cors(corsConfig -> corsConfig.configurationSource(configurationSource))
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/myAccount").hasRole("USER")
@@ -68,10 +58,5 @@ public class SecurityConfiguration {
         http.httpBasic(withDefaults());
 
         return http.build();
-    }
-
-    @Bean
-    public PasswordEncoder noOpPasswordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 }
