@@ -1,7 +1,5 @@
 package com.harsh.securebank.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
 import com.harsh.securebank.filter.CsrfCookieFilter;
 import java.util.Collections;
 import java.util.List;
@@ -11,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -27,6 +26,9 @@ public class SecurityConfiguration {
 
         CsrfTokenRequestAttributeHandler csrfAttributeHandler = new CsrfTokenRequestAttributeHandler();
         csrfAttributeHandler.setCsrfRequestAttributeName("_csrf");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeyCloakRoleConverter());
 
         CorsConfigurationSource configurationSource = request -> {
             CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -50,12 +52,12 @@ public class SecurityConfiguration {
                 .requestMatchers("/myAccount").hasRole("USER")
                 .requestMatchers("/myBalance").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/myCards").hasRole("USER")
-                .requestMatchers("/myLoans").authenticated()
+                .requestMatchers("/myLoans").hasRole("USER")
                 .requestMatchers("/user").authenticated()
                 .requestMatchers("/contact", "/notices", "/register", "/test/**").permitAll());
 
-        http.formLogin(withDefaults());
-        http.httpBasic(withDefaults());
+        http.oauth2ResourceServer(resourceServer -> resourceServer.jwt(
+            jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter)));
 
         return http.build();
     }
